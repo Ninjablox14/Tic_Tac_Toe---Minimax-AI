@@ -6,7 +6,9 @@ A terminal-based Tic-Tac-Toe game written in Python.
 
 - Player vs Player
 - Easy AI (Random)
-- Impossible AI (Minimax)
+- Medium AI (50% chance of random or Minimax move)
+- Hard AI (40% chance of random, and 60% chance of Minimax move)
+- Impossible AI (100% Minimax moves)
 
 ## Concepts Used
 
