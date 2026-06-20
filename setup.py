@@ -1,11 +1,18 @@
 import os, random,time
-
+def roll():
+    return random.randint(1,100)
 def draw_board(board):
     board = (f"|{board[1]}|{board[2]}|{board[3]}|\n"
     f"|{board[4]}|{board[5]}|{board[6]}|\n"
     f"|{board[7]}|{board[8]}|{board[9]}|")
     print(board)
 
+def rand_move(board):
+    while True:
+        c_choice = random.randint(1,9)
+        if board[int(c_choice)] not in {"X","O"}: break
+    return c_choice
+    
 def check_turn(turn):
     if turn % 2 == 0: 
         return "X"
@@ -28,15 +35,21 @@ def main_menu():
         print("Welcome to Tic-Tac-Toe!")
         print("1. Play vs a Friend (PvP)")
         print("2. Play vs Computer (Easy)")
-        print("3. Play vs Computer (Impossible)")
-        print("4.  Pess q to quit")
+        print("3. Play vs Computer (Normal)")
+        print("4. Play vs Computer (Hard)")
+        print("5. Play vs Computer (Impossible)")
+        print("6.  Pess q to quit")
         choice = input("Select an option: ")
         
         if choice == "1":
             game(mode="pvp") 
         elif choice == "2":
-            game(mode="computer") 
+            game(mode="very easy") 
         elif choice == "3":
+            game(mode="normal")
+        elif choice == "4":
+            game(mode="hard")
+        elif choice == "5":
             game(mode="minimax")
         elif choice == "q":
             print("Thanks for playing!")
@@ -56,26 +69,48 @@ def game(mode = "N/A"):
         os.system('cls' if os.name == 'nt' else 'clear')
         draw_board(board)
         current_turn = turn % 2 + 1
-        if mode == "computer" and current_turn == 2:
-            while True:
-                c_choice = random.randint(1,9)
-                if board[int(c_choice)] not in {"X","O"}: break
+        if mode == "very easy" and current_turn == 2:
             time.sleep(0.2)
-            board[c_choice] = check_turn(turn)
+            board[rand_move(board)] = check_turn(turn)
             
             if win_conditions(board):
                 playing = False
-                winner = 2
+                winner = current_turn
+            else: 
+                turn +=1
+        elif mode == "normal" and current_turn == 2:
+            chance = roll()
+            if chance <= 50:
+                time.sleep(0.2)
+                board[rand_move(board)] = check_turn(turn)
+            else:
+                time.sleep(0.2)
+                board[best_move(board)] = check_turn(turn)
+            if win_conditions(board):
+                playing = False
+                winner = current_turn
+            else: 
+                turn +=1
+        elif mode == "hard" and current_turn == 2:
+            chance = roll()
+            if chance <= 40:
+                time.sleep(0.2)
+                board[rand_move(board)] = check_turn(turn)
+            else:
+                time.sleep(0.2)
+                board[best_move(board)] = check_turn(turn)
+            if win_conditions(board):
+                playing = False
+                winner = current_turn
             else: 
                 turn +=1
         elif mode == "minimax" and current_turn ==2:
-            c_choice = best_move(board)
             time.sleep(0.2)
-            board[c_choice] = check_turn(turn)
+            board[best_move(board)] = check_turn(turn)
             
             if win_conditions(board):
                 playing = False
-                winner = 2
+                winner = current_turn
             else: 
                 turn +=1
         else:
@@ -106,7 +141,7 @@ def game(mode = "N/A"):
     draw_board(board)
 
     if winner: 
-        if mode == "computer" and winner == 2:
+        if mode != "pvp" and winner == 2:
             print("Computer wins!")
         else:
             print(f"Player {winner} wins!")
@@ -130,9 +165,9 @@ def is_board_full(board):
 def minimax(minimax_board, depth, is_maxxing):
     winner = check_winner(minimax_board)
     if winner == "X":
-        return float('-inf')
+        return depth - 1000
     elif winner == "O":
-        return float('inf')
+        return 1000 - depth
     elif is_board_full(minimax_board):
         return 0
     
