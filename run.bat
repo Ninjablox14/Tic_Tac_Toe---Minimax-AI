@@ -1,5 +1,5 @@
 @echo off
 echo Starting Tic Tac Toe game...
 echo.
-python main.py
+python gui.py
 pause
