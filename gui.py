@@ -12,6 +12,7 @@ class TicTacToeGUI:
         self.turn = 0
         self.mode = None
         self.board_buttons = {}
+        self.ai_thinking = False  # Track AI delay state globally
         
         self.show_menu()
     
@@ -41,6 +42,7 @@ class TicTacToeGUI:
         self.mode = mode
         self.board = {1: '1', 2: '2', 3: '3', 4: '4', 5: '5', 6: '6', 7: '7', 8: '8', 9: '9'}
         self.turn = 0
+        self.ai_thinking = False  # Reset flag at the start of a game
         
         for widget in self.root.winfo_children():
             widget.destroy()
@@ -64,7 +66,8 @@ class TicTacToeGUI:
                  fg="white", command=self.show_menu).pack()
     
     def on_click(self, pos):
-        if self.board[pos] in {"X", "O"}:
+        # Prevent input if square is taken or if AI is currently waiting out its delay
+        if self.board[pos] in {"X", "O"} or self.ai_thinking:
             return
         
         self.board[pos] = check_turn(self.turn)
@@ -82,6 +85,8 @@ class TicTacToeGUI:
             return
         
         if self.mode != "pvp":
+            self.ai_thinking = True  # Block further clicks
+            self.status.config(text="AI is thinking...")
             self.root.after(500, self.ai_move)
     
     def ai_move(self):
@@ -109,6 +114,7 @@ class TicTacToeGUI:
             self.disable_all()
             return
         
+        self.ai_thinking = False  # Safely allow player input again
         self.status.config(text="Your turn (X)")
     
     def update_display(self):
@@ -127,4 +133,3 @@ if __name__ == "__main__":
     root = tk.Tk()
     app = TicTacToeGUI(root)
     root.mainloop()
-
